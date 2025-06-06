@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Casey Hess Portfolio</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+<body>
+  <header>
+    <h1>Casey Hess</h1>
+    <p>Programmer & Game Developer</p>
+  </header>
+
+  <main id="project-orbit">
+    <div class="orbit-container">
+      <canvas id="starfield" width="500" height="500"></canvas>
+      <div class="orbit-ring">
+        {% for project in projects %}
+        <a
+          class="planet"
+          style="--i: {{ loop.index0 }};"
+          href="{{ project.url }}"
+          target="_blank"
+          rel="noopener noreferrer"
+          data-tooltip="{{ project.tooltip }}"
+        >
+          <div class="planet-text">{{ project.title }}</div>
+        </a>
+        {% endfor %}
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-separator"></div>
+    <h2>Contact Me</h2>
+    <ul>
+      <li><a href="mailto:caseyhess33@gmail.com">caseyhess33@gmail.com</a></li>
+      <li><a href="https://github.com/yourusername" target="_blank">GitHub</a></li>
+      <li><a href="https://www.linkedin.com/in/yourprofile" target="_blank">LinkedIn</a></li>
+    </ul>
+  </footer>
+
+  <script src="{{ url_for('static', filename='js/orbit.js') }}"></script>
+  <script>
+    const canvas = document.getElementById('starfield');
+    const ctx = canvas.getContext('2d');
+    const width = canvas.width;
+    const height = canvas.height;
+    const starsCount = 100;
+    const stars = [];
+
+    function randomRange(min, max) {
+      return Math.random() * (max - min) + min;
+    }
+
+    for (let i = 0; i < starsCount; i++) {
+      stars.push({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        radius: randomRange(0.3, 1.2),
+        alpha: randomRange(0.3, 1),
+        delta: randomRange(0.005, 0.02),
+        increasing: Math.random() > 0.5,
+      });
+    }
+
+    function drawStars() {
+      ctx.clearRect(0, 0, width, height);
+      ctx.fillStyle = '#000010'; // 60% color
+      ctx.fillRect(0, 0, width, height);
+
+      for (let star of stars) {
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255,255,255,${star.alpha})`;
+        ctx.fill();
+
+        if (star.increasing) {
+          star.alpha += star.delta;
+          if (star.alpha >= 1) star.increasing = false;
+        } else {
+          star.alpha -= star.delta;
+          if (star.alpha <= 0.3) star.increasing = true;
+        }
+      }
+
+      requestAnimationFrame(drawStars);
+    }
+
+    drawStars();
+  </script>
+</body>
+</html>
